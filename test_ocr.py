@@ -8,13 +8,13 @@ import sys
 model = ONNXPaddleOcr(use_angle_cls=True, use_gpu=False)
 
 
-img = cv2.imread('./onnxocr/test_images/1.jpg')
+img = cv2.imread('/home/maoyc/OnnxOCR/onnxocr/test_images/000000001.png')
 s = time.time()
-result = model.ocr(img)
+result = model.ocr(img, det=False, cls=False, rec=True)
 e = time.time()
 print("total time: {:.3f}".format(e - s))
 print("result:", result)
 for box in result[0]:
     print(box)
 
-sav2Img(img, result)
+# sav2Img(img, result)
