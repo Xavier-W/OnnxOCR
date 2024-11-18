@@ -8,9 +8,11 @@ from onnxocr.onnx_paddleocr import ONNXPaddleOcr
 class OCR_Project():
     def __init__(self, img_root_dir, boxes_txt):
         self.model = ONNXPaddleOcr(use_angle_cls=False, use_gpu=True)
+        print("----------------reading images----------------")
         self.img_path_list = self.get_images_list(img_root_dir)
+        print("----------------reading done----------------")
         self.boxes = self.get_boxes(boxes_txt)
-        self.head = ["吊重(kg)","载重比","力矩比","回转","高度","幅度","风速","水平角","垂直角","规格型号","最大载重","出厂编号","塔身高度","前臂长度","后臂长度","实际吊重","载重比","回转","小车幅度","吊钩高度","风速","垂直角","水平角"]
+        self.head = ["时间","吊重(kg)","载重比","力矩比","回转","高度","幅度","风速","水平角","垂直角","规格型号","最大载重","出厂编号","塔身高度","前臂长度","后臂长度","实际吊重","载重比","回转","小车幅度","吊钩高度","风速","垂直角","水平角"]
 
 
     def get_boxes(self, boxes_txt):
@@ -31,7 +33,7 @@ class OCR_Project():
         return image_paths
 
     def process(self, img_path):
-        results = []
+        results = [os.path.splitext(os.path.basename(img_path))[0]]
         cropped_list = self.ori_to_cropped(img_path)
         for cropped in cropped_list:
             result = self.model.ocr(cropped, det=False, cls=False, rec=True)
@@ -58,4 +60,6 @@ class OCR_Project():
         with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
             for row in content:
+                if '' in row:
+                    row = [row[0]]+['' for i in row[1:]]
                 writer.writerow(row)  # 写入一行数据
