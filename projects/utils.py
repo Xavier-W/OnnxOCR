@@ -2,6 +2,7 @@ import os
 import cv2
 import csv
 import sys
+import re
 sys.path.append('./')
 from onnxocr.onnx_paddleocr import ONNXPaddleOcr
 
@@ -12,7 +13,7 @@ class OCR_Project():
         self.img_path_list = self.get_images_list(img_root_dir)
         print("----------------reading done----------------")
         self.boxes = self.get_boxes(boxes_txt)
-        self.head = ["时间","吊重(kg)","载重比","力矩比","回转","高度","幅度","风速","水平角","垂直角","规格型号","最大载重","出厂编号","塔身高度","前臂长度","后臂长度","实际吊重","载重比","回转","小车幅度","吊钩高度","风速","垂直角","水平角"]
+        self.head = ["时间","吊重(kg)","载重比(%)","力矩比(%)","回转(°)","高度(m)","幅度(m)","风速(m/s)","水平角(°)","垂直角(°)","规格型号","最大载重(kg)","出厂编号","塔身高度(m)","前臂长度(m)","后臂长度(m)","实际吊重(kg)","载重比(%)","回转(°)","小车幅度(m)","吊钩高度(m)","风速(m/s)","垂直角(°)","水平角(°)"]
 
 
     def get_boxes(self, boxes_txt):
@@ -43,9 +44,11 @@ class OCR_Project():
     def result_process(self, result):
         result = result.replace("。", "0")
         result = result.replace("口", "0")
-        result = result.replace("*", "")
-        result = result.replace(" ", "")
+        result = re.sub(r'[^0-9\.\+\-]', '', result)
         return result
+        # result = result.replace("*", "")
+        # result = result.replace(" ", "")
+        # return result
 
     def ori_to_cropped(self, img_path):
         img_data = cv2.imread(img_path)
