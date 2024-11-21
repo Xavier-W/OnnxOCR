@@ -13,7 +13,7 @@ class OCR_Project():
         self.img_path_list = self.get_images_list(img_root_dir)
         print("----------------reading done----------------")
         self.boxes = self.get_boxes(boxes_txt)
-        self.head = ["时间","吊重(kg)","载重比(%)","力矩比(%)","回转(°)","高度(m)","幅度(m)","风速(m/s)","水平角(°)","垂直角(°)","规格型号","最大载重(kg)","出厂编号","塔身高度(m)","前臂长度(m)","后臂长度(m)","实际吊重(kg)","载重比(%)","回转(°)","小车幅度(m)","吊钩高度(m)","风速(m/s)","垂直角(°)","水平角(°)"]
+        self.head = ["时间","吊重(kg)","载重比(%)","力矩比(%)","回转(°)","高度(m)","幅度(m)","风速(m/s)","水平角(°)","垂直角(°)","最大载重(kg)","塔身高度(m)","前臂长度(m)","后臂长度(m)","实际吊重(kg)","载重比(%)","回转(°)","小车幅度(m)","吊钩高度(m)","风速(m/s)","垂直角(°)","水平角(°)","倍率","相对坐标X","相对坐标Y","首节高度(m)","塔节高度(m)","节数","塔身高度(m)","塔帽高度(m)","前臂长度(m)","后臂长度(m)","左转限位(°)","右转限位(°)","近限位(m)","远限位(m)","高限位(m)","力矩限位(%)","驾驶员"]
 
 
     def get_boxes(self, boxes_txt):
@@ -36,9 +36,12 @@ class OCR_Project():
     def process(self, img_path):
         results = [os.path.splitext(os.path.basename(img_path))[0]]
         cropped_list = self.ori_to_cropped(img_path)
-        for cropped in cropped_list:
+        for i, cropped in enumerate(cropped_list):
             result = self.model.ocr(cropped, det=False, cls=False, rec=True)
-            results.append(self.result_process(result[0][0][0]))
+            if i<len(cropped_list)-1:
+                results.append(self.result_process(result[0][0][0]))
+            else:
+                results.append(result[0][0][0].replace(" ", ""))
         return results
 
     def result_process(self, result):
